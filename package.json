@@ -1,0 +1,25 @@
+{
+  "name": "forja-fitness",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @forja/web",
+    "build": "npm run build -w @forja/web",
+    "start": "npm run start -w @forja/web",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @forja/web",
+    "db:migrate": "npm run db:migrate -w @forja/web",
+    "db:seed": "npm run db:seed -w @forja/web"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

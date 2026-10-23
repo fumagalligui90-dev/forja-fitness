@@ -1,0 +1,27 @@
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# dados locais (PGlite) e segredos
+.data/
+.env
+.env.local
+.env.*.local
+
+# Expo
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# configuração local do ambiente de desenvolvimento
+.claude/
+
+.DS_Store
+Thumbs.db

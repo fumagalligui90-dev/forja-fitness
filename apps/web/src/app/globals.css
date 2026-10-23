@@ -1,0 +1,121 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Tokens. Tema escuro é o padrão; [data-theme="light"] troca a paleta.
+   --accent é configurável (preferência do usuário / marca no admin).
+------------------------------------------------------------------- */
+:root {
+  --accent: #ff5a1f;
+  --bg: #0b0b0c;
+  --surface: #141416;
+  --surface-2: #1c1c1f;
+  --surface-3: #26262a;
+  --line: #2c2c31;
+  --text: #f4f4f5;
+  --muted: #a3a3ad;
+  --faint: #6e6e78;
+  --danger: #ff5a5f;
+  --success: #3ddc97;
+  --warning: #ffb547;
+  --accent-ink: #0b0b0c;
+  --accent-soft: color-mix(in oklab, var(--accent) 16%, transparent);
+  --ring: color-mix(in oklab, var(--accent) 60%, transparent);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f5f5f2;
+  --surface: #ffffff;
+  --surface-2: #efefeb;
+  --surface-3: #e4e4df;
+  --line: #d9d9d3;
+  --text: #121214;
+  --muted: #5c5c66;
+  --faint: #8a8a93;
+  --danger: #d92d36;
+  --success: #138a5a;
+  --warning: #b86e00;
+  --accent-soft: color-mix(in oklab, var(--accent) 14%, transparent);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), sans-serif;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Inputs numéricos sem setas (usamos botões grandes de +/−). */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* Só movimento (sem opacidade): o conteúdo nunca fica invisível se a animação não rodar. */
+@keyframes rise {
+  from {
+    transform: translateY(6px);
+  }
+}
+.animate-rise {
+  /* `backwards`: ao terminar, nenhum transform fica aplicado (um transform residual
+     tornaria o elemento o "containing block" de filhos position: fixed). */
+  animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
