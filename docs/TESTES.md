@@ -24,7 +24,36 @@
 
 **Smoke HTTP — `apps/web/scripts/smoke.mjs`** (24 verificações): 401 sem sessão, CSRF por Origin (403), não-JSON (415), validação (400), cadastro → bloqueio → e-mail → verificação → login, criar treino, iniciar sessão, descanso, 409, isolamento entre duas contas reais (leitura, comando, início de sessão), histórico.
 
-## Resultados (23/10/2026, Windows 11, Node 24.22.1)
+## Etapa 2 — resultados (23/10/2026)
+
+| Verificação | Resultado |
+|---|---|
+| core (unitários) | 14/14 ✅ |
+| web (integração, + `profile.test.ts`: padrões, validação, isolamento RLS do perfil) | 17/17 ✅ |
+| typecheck core + web + mobile | ✅ sem erros |
+| smoke HTTP (+ perfil, preferências, requisição sem Origin, CORS, callbacks `exp://`/`forja://`, callback malicioso recusado) | 35/35 ✅ |
+| `expo export` Android + iOS (bundle Hermes) | ✅ |
+| `expo-doctor` | 19/20 — o aviso restante (`.expo/` no git) é falso positivo: `git check-ignore` confirma que está ignorado |
+
+Verificação manual do app no **Expo web** (navegador): dashboard com dados reais, iniciar treino,
+registrar série, descanso automático, ver o mesmo treino na web em andamento (continuidade entre
+plataformas), finalizar com confirmação, resumo, sair do modo treino, trocar tema no app e ver a web
+abrir no tema escolhido, editar perfil na web e ver no app (e vice-versa), validação de peso.
+
+**Não verificado ainda:** aparelho físico Android/iOS (notificação local, vibração, tela acesa,
+SecureStore e teclado nativo só existem no aparelho). Roteiro sugerido para o teste no celular:
+1. Login → iniciar treino → finalizar série → bloquear a tela: a notificação deve tocar no fim do descanso.
+2. Pausar o descanso: a notificação agendada deve ser cancelada.
+3. Fechar o app durante o treino e reabrir: a faixa "Treino em andamento" deve aparecer.
+
+Observação: no navegador de testes com emulação de celular (toque), os botões do Expo web não
+respondem ao clique simulado; em tamanho desktop funcionam. É limitação da emulação, não do app nativo.
+
+`npm audit` aponta vulnerabilidades em ferramentas de desenvolvimento (Expo CLI via `node-forge`,
+`drizzle-kit` via `esbuild`), que não entram no bundle do app nem no servidor. A "correção" sugerida
+rebaixaria o Expo para o SDK 44, por isso não foi aplicada; acompanhar atualizações.
+
+## Etapa 1 — resultados (23/10/2026, Windows 11, Node 24.22.1)
 
 | Suíte | Resultado |
 |---|---|

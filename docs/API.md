@@ -1,12 +1,15 @@
 # API /api/v1
 
-JSON em todas as rotas. Autenticação por cookie de sessão (web); o app móvel usará o
-plugin Expo do Better Auth (Etapa 2). Contratos de tipos: `packages/core/src/types.ts`;
-validação: `packages/core/src/schemas.ts` (os mesmos schemas no cliente e no servidor).
+JSON em todas as rotas. Autenticação por cookie de sessão: o navegador guarda o cookie; o app
+móvel guarda no SecureStore (plugin Expo do Better Auth) e o envia no cabeçalho `Cookie`.
+Contratos: `packages/core/src/types.ts`; validação: `packages/core/src/schemas.ts`; cliente
+tipado usado pela web e pelo app: `packages/core/src/api-client.ts`.
 
 **Regras gerais**
 - Sem sessão → `401`. E-mail não verificado → `403 email_not_verified`.
-- Mutações exigem `Content-Type: application/json` (`415`) e `Origin` do próprio app (`403`).
+- Mutações exigem `Content-Type: application/json` (`415`). Se houver `Origin` (navegadores), ela precisa ser
+  a do próprio site ou estar em `CORS_ORIGINS` (`403`). Apps nativos não enviam `Origin`.
+- CORS só para as origens de `CORS_ORIGINS` (em dev: o Expo web em `http://localhost:8081`).
 - Erros: `{ "error": { "code", "message", "issues?", "requestId?" } }`. Erros internos nunca expõem detalhes.
 - Recurso de outro usuário → `404` (não revela existência).
 
@@ -19,6 +22,13 @@ validação: `packages/core/src/schemas.ts` (os mesmos schemas no cliente e no s
 | Recuperar senha | `POST /api/auth/request-password-reset` → `POST /api/auth/reset-password` |
 | Excluir conta | `POST /api/auth/delete-user` `{ password }` |
 | Concluir cadastro social | `POST /api/v1/me/consent` `{ birthDate, termsVersion }` |
+
+## Conta, perfil e preferências
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/me` | conta + perfil de treino + preferências |
+| PUT | `/me` | `{ name, heightCm, weightKg, goal, experienceLevel, trainingDays, sessionMinutes }` |
+| PATCH | `/me/preferences` | `{ theme?, accentColor?, restAlerts? }` — sincroniza web e app |
 
 ## Exercícios
 | Método | Rota | Descrição |

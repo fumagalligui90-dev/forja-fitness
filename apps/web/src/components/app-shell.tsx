@@ -4,6 +4,9 @@ import { BRAND } from '@forja/core';
 import { Dumbbell, History, Home, Library, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { apiClient } from '@/lib/api';
+import { applyPreferences } from '@/lib/preferences';
 import { BrandLogo } from './brand';
 import { ActiveSessionBanner } from './active-session-banner';
 import { cn } from './ui';
@@ -18,6 +21,14 @@ const NAV = [
 
 export function AppShell({ userName, children }: { userName: string; children: React.ReactNode }) {
   const pathname = usePathname();
+
+  // Preferências vêm do servidor (sincronizadas com o app móvel).
+  useEffect(() => {
+    apiClient.me
+      .get()
+      .then((me) => applyPreferences(me.preferences))
+      .catch(() => {});
+  }, []);
   const inSession = /^\/app\/sessao\/[^/]+$/.test(pathname);
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href : pathname.startsWith(href));
 

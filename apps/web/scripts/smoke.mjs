@@ -111,6 +111,51 @@ const bStart = await b('/api/v1/sessions', { method: 'POST', body: { workoutId: 
 ok(bStart.status === 404, `B não inicia sessão com treino de A → 404 (${bStart.status})`);
 ok((await b('/api/v1/workouts')).json.length === 0, 'lista de treinos de B está vazia');
 
+// Perfil e preferências (Etapa 2)
+const me0 = await a('/api/v1/me');
+ok(me0.status === 200 && me0.json.profile.heightCm === null && me0.json.preferences.theme === 'dark', 'perfil novo com valores padrão');
+const prof = await a('/api/v1/me', {
+  method: 'PUT',
+  body: { name: 'Smoke A2', heightCm: 180, weightKg: 80.5, goal: 'strength', experienceLevel: 'beginner', trainingDays: [1, 3], sessionMinutes: 60 },
+});
+ok(prof.status === 200 && prof.json.name === 'Smoke A2' && prof.json.profile.heightCm === 180, `atualizar perfil (${prof.status})`);
+const badProf = await a('/api/v1/me', { method: 'PUT', body: { name: 'X', heightCm: 20 } });
+ok(badProf.status === 400, `perfil inválido → 400 (${badProf.status})`);
+const prefs = await a('/api/v1/me/preferences', { method: 'PATCH', body: { theme: 'light', accentColor: '#3AA8FF' } });
+ok(prefs.json?.preferences?.theme === 'light' && prefs.json.preferences.accentColor === '#3aa8ff', 'preferências sincronizadas no servidor');
+ok((await b('/api/v1/me')).json?.preferences?.theme === 'dark', 'preferências de A não vazam para B');
+
+// App nativo: sem cabeçalho Origin, só com o cookie (como o app Expo envia)
+const native = await a('/api/v1/workouts', { method: 'POST', body: { name: 'Nativo', exercises: [] }, headers: { Origin: '' } });
+ok(native.status === 201, `requisição sem Origin (app nativo) aceita (${native.status})`);
+
+// CORS somente para origens configuradas (Expo web em dev)
+const pre = await fetch(`${BASE}/api/v1/workouts`, { method: 'OPTIONS', headers: { Origin: 'http://localhost:8081', 'Access-Control-Request-Method': 'POST' } });
+ok(pre.headers.get('access-control-allow-origin') === 'http://localhost:8081', 'CORS liberado para http://localhost:8081');
+const preBad = await fetch(`${BASE}/api/v1/workouts`, { method: 'OPTIONS', headers: { Origin: 'https://site-malicioso.example', 'Access-Control-Request-Method': 'POST' } });
+ok(!preBad.headers.get('access-control-allow-origin'), 'CORS negado para origem desconhecida');
+
+// Cadastro pelo app no Expo Go usa callback exp://… (aceito só em dev)
+const expo = client();
+const expoUp = await expo('/api/auth/sign-up/email', {
+  method: 'POST',
+  headers: { Origin: '', 'expo-origin': 'exp://192.168.0.10:8081' },
+  body: { name: 'Smoke Expo', email: `smoke.expo.${Date.now()}@exemplo.test`, password: 'Smoke-expo-123', birthDate: '1990-01-01', termsVersion: '2026-10-rascunho', callbackURL: 'exp://192.168.0.10:8081/--/entrar' },
+});
+ok(expoUp.status === 200, `cadastro com callback exp:// (${expoUp.status}${expoUp.json?.message ? ` ${expoUp.json.message}` : ''})`);
+const appUp = await expo('/api/auth/sign-up/email', {
+  method: 'POST',
+  headers: { Origin: '', 'expo-origin': 'forja://' },
+  body: { name: 'Smoke App', email: `smoke.app.${Date.now()}@exemplo.test`, password: 'Smoke-app-123', birthDate: '1990-01-01', termsVersion: '2026-10-rascunho', callbackURL: 'forja:///entrar' },
+});
+ok(appUp.status === 200, `cadastro com callback forja:// (${appUp.status}${appUp.json?.message ? ` ${appUp.json.message}` : ''})`);
+const evilUp = await expo('/api/auth/sign-up/email', {
+  method: 'POST',
+  headers: { Origin: '', 'expo-origin': 'forja://' },
+  body: { name: 'Smoke Evil', email: `smoke.evil.${Date.now()}@exemplo.test`, password: 'Smoke-evil-123', birthDate: '1990-01-01', termsVersion: '2026-10-rascunho', callbackURL: 'https://site-malicioso.example/roubo' },
+});
+ok(evilUp.status === 403, `callback para site desconhecido recusado (${evilUp.status})`);
+
 const done = await a(`/api/v1/sessions/${sid}/commands`, { method: 'POST', body: { type: 'finish', notes: 'smoke' } });
 ok(done.json?.status === 'completed', 'finalizar treino');
 const hist = await a('/api/v1/sessions');

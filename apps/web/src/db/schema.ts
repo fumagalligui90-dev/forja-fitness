@@ -1,9 +1,11 @@
 import {
   DIFFICULTIES,
   EQUIPMENT,
+  GOALS,
   MUSCLE_GROUPS,
   SESSION_STATUSES,
   TECHNIQUES,
+  THEMES,
 } from '@forja/core';
 import { sql } from 'drizzle-orm';
 import {
@@ -108,6 +110,27 @@ export const equipmentEnum = pgEnum('equipment', EQUIPMENT);
 export const difficultyEnum = pgEnum('difficulty', DIFFICULTIES);
 export const techniqueEnum = pgEnum('technique', TECHNIQUES);
 export const sessionStatusEnum = pgEnum('session_status', SESSION_STATUSES);
+export const goalEnum = pgEnum('goal', GOALS);
+export const themeEnum = pgEnum('theme', THEMES);
+
+// =========================================================== Perfil
+
+/** Dados de treino e preferências do usuário (1:1 com users; criado sob demanda). */
+export const profiles = pgTable('profiles', {
+  userId: text()
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  heightCm: smallint(),
+  weightKg: numeric({ precision: 5, scale: 1, mode: 'number' }),
+  goal: goalEnum(),
+  experienceLevel: difficultyEnum(),
+  trainingDays: smallint().array().notNull().default(sql`'{}'::smallint[]`),
+  sessionMinutes: smallint(),
+  theme: themeEnum().notNull().default('dark'),
+  accentColor: text(),
+  restAlerts: boolean().notNull().default(true),
+  updatedAt: updatedAt(),
+});
 
 // =========================================================== Exercícios
 

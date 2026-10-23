@@ -29,6 +29,11 @@ dev_emails           caixa de saída só de desenvolvimento
 | `set_logs` | carga/reps **anuláveis** (dado ausente ≠ zero), `revision`; único por (exercício da sessão, nº da série) |
 | `set_log_revisions` | valores anteriores a cada edição |
 
+## Etapa 2
+| Tabela | Pontos-chave |
+|---|---|
+| `profiles` | 1:1 com `users` (criado sob demanda): altura, peso, objetivo (`goal`), nível (`difficulty`), dias disponíveis, duração desejada, tema, cor de destaque, avisos de descanso. RLS por `user_id`. Migrações `0002_profiles.sql` e `0003_profiles_rls.sql`. |
+
 ## Segurança no banco
 - Toda tabela de dados do usuário tem `owner_id` + **RLS** (`owner_id = app_user_id()`).
 - A API usa `SET LOCAL ROLE forja_app` + `set_config('app.user_id', …)` por transação.
@@ -36,6 +41,6 @@ dev_emails           caixa de saída só de desenvolvimento
 - Exclusão da conta: `ON DELETE CASCADE` remove todos os dados do usuário.
 
 ## Planejado (próximas etapas)
-`profiles` (altura, peso, objetivo, nível, disponibilidade), `body_measurements`, `progress_photos`,
+`body_weight_logs` (histórico de peso), `body_measurements`, `progress_photos`,
 `foods`/`meals`/`meal_items`/`nutrition_goals`/`recipes`/`menus`, `plans`/`subscriptions`/`payment_events`/`coupons`,
 `professionals`/`client_links`/`consents`, `notifications`/`notification_prefs`, `audit_logs`, `app_settings` (marca).

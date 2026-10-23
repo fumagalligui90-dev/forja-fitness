@@ -1,5 +1,6 @@
 import { ageOn, birthDateSchema, MIN_SIGNUP_AGE, TERMS_VERSION, BRAND } from '@forja/core';
 import { betterAuth } from 'better-auth';
+import { expo } from '@better-auth/expo';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { getDb, type Db } from '@/db/client';
@@ -40,6 +41,27 @@ export function validateSignupProfile(birthDate: unknown, termsVersion: unknown,
   return parsed.data;
 }
 
+/** Esquema de deep link do app (app.json → "scheme"). */
+export const APP_SCHEME = process.env.APP_SCHEME ?? 'forja';
+
+/** Origens extras aceitas em dev (ex.: Expo web em http://localhost:8081). */
+export function corsOrigins(): string[] {
+  return (process.env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function trustedOrigins(baseURL?: string) {
+  return [
+    ...(baseURL ? [baseURL] : []),
+    `${APP_SCHEME}://`,
+    ...corsOrigins(),
+    // Expo Go usa exp://<ip-da-rede>:8081 durante o desenvolvimento.
+    ...(process.env.NODE_ENV === 'production' ? [] : ['exp://']),
+  ];
+}
+
 export function createAuth(db: Db, sendEmail: EmailSender, baseURL = process.env.BETTER_AUTH_URL) {
   // Envio sem `await`: a resposta não deve revelar (por tempo) se o e-mail existe.
   const dispatch = (msg: Parameters<EmailSender>[0]) =>
@@ -49,7 +71,8 @@ export function createAuth(db: Db, sendEmail: EmailSender, baseURL = process.env
     appName: BRAND.name,
     baseURL,
     secret: process.env.BETTER_AUTH_SECRET,
-    trustedOrigins: baseURL ? [baseURL] : [],
+    trustedOrigins: trustedOrigins(baseURL),
+    plugins: [expo()],
     database: drizzleAdapter(db, {
       provider: 'pg',
       schema: { user: users, session: authSessions, account: authAccounts, verification: authVerifications },

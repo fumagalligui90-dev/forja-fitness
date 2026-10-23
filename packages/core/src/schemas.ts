@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DIFFICULTIES, EQUIPMENT, MUSCLE_GROUPS, TECHNIQUES } from './constants';
+import { DIFFICULTIES, EQUIPMENT, GOALS, MUSCLE_GROUPS, TECHNIQUES, THEMES } from './constants';
 
 const text = (max: number) => z.string().trim().max(max);
 
@@ -20,6 +20,43 @@ export const passwordSchema = z
   .max(128, 'Senha muito longa');
 
 export const birthDateSchema = z.iso.date('Data de nascimento inválida');
+
+// ---------------------------------------------------------------- Perfil e preferências
+
+const weekdaysSchema = z
+  .array(z.int().min(0).max(6))
+  .max(7)
+  .default([])
+  .transform((d) => [...new Set(d)].sort((a, b) => a - b));
+
+export const profileInputSchema = z.object({
+  name: text(80).min(2, 'Informe seu nome'),
+  heightCm: z.int('Altura em centímetros, sem vírgula').min(100, 'Altura mínima: 100 cm').max(250, 'Altura máxima: 250 cm').nullable(),
+  weightKg: z
+    .number()
+    .min(25, 'Peso mínimo: 25 kg')
+    .max(350, 'Peso máximo: 350 kg')
+    .transform((v) => Math.round(v * 10) / 10)
+    .nullable(),
+  goal: z.enum(GOALS).nullable(),
+  experienceLevel: z.enum(DIFFICULTIES).nullable(),
+  trainingDays: weekdaysSchema,
+  sessionMinutes: z.int().min(10, 'Mínimo de 10 minutos').max(240, 'Máximo de 240 minutos').nullable(),
+});
+export type ProfileInput = z.input<typeof profileInputSchema>;
+
+export const preferencesInputSchema = z
+  .object({
+    theme: z.enum(THEMES),
+    accentColor: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/, 'Cor inválida')
+      .transform((c) => c.toLowerCase())
+      .nullable(),
+    restAlerts: z.boolean(),
+  })
+  .partial();
+export type PreferencesInput = z.input<typeof preferencesInputSchema>;
 
 // ---------------------------------------------------------------- Exercícios
 
@@ -62,11 +99,7 @@ export const workoutInputSchema = z.object({
   name: text(60).min(1, 'Dê um nome ao treino'),
   label: text(3).default(''),
   notes: text(1000).default(''),
-  weekdays: z
-    .array(z.int().min(0).max(6))
-    .max(7)
-    .default([])
-    .transform((d) => [...new Set(d)].sort((a, b) => a - b)),
+  weekdays: weekdaysSchema,
   exercises: z.array(workoutExerciseInputSchema).max(40, 'Máximo de 40 exercícios'),
 });
 export type WorkoutInput = z.input<typeof workoutInputSchema>;

@@ -1,7 +1,7 @@
 import type { ApiError } from '@forja/core';
 import { z, ZodError } from 'zod';
 import { ensureDb, getDb, type Db } from '@/db/client';
-import { getAuth, type AuthUser } from './auth';
+import { corsOrigins, getAuth, type AuthUser } from './auth';
 
 export class HttpError extends Error {
   constructor(
@@ -50,8 +50,10 @@ function assertSameOriginJson(req: Request) {
   if (!type.startsWith('application/json')) {
     throw new HttpError(415, 'unsupported_media_type', 'Envie os dados como JSON.');
   }
+  // Apps nativos não enviam Origin; navegadores sempre enviam em POST/PUT/PATCH/DELETE.
   const origin = req.headers.get('origin');
-  if (origin && origin !== new URL(req.url).origin && origin !== process.env.BETTER_AUTH_URL) {
+  const allowed = [new URL(req.url).origin, process.env.BETTER_AUTH_URL, ...corsOrigins()];
+  if (origin && !allowed.includes(origin)) {
     throw new HttpError(403, 'forbidden_origin', 'Origem não permitida.');
   }
 }

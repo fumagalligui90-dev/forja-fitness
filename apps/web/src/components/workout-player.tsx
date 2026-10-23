@@ -38,6 +38,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, errorMessage } from '@/lib/api';
 import { keepScreenOn, notifyRestOver, requestNotificationPermission, unlockAudio } from '@/lib/alerts';
+import { restAlertsEnabled } from '@/lib/preferences';
 import { ExercisePicker } from './exercise-picker';
 import { Alert, Badge, Button, cn, Dialog, Field, Input, Textarea } from './ui';
 
@@ -159,7 +160,7 @@ export function WorkoutPlayer({ initial }: { initial: SessionDTO }) {
       alertedFor.current = endsAt;
       // Ao reabrir o app muito depois do fim do descanso, não toca alarme atrasado.
       if (overBy > 10_000) return;
-      notifyRestOver(ex.name);
+      if (restAlertsEnabled()) notifyRestOver(ex.name);
       setRestDoneFlash(true);
       const t = setTimeout(() => setRestDoneFlash(false), 4000);
       return () => clearTimeout(t);

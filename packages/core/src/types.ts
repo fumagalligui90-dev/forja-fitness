@@ -1,5 +1,33 @@
 /** Contratos (DTOs) da API /api/v1 — compartilhados entre servidor, web e app. */
-import type { Difficulty, Equipment, MuscleGroup, SessionStatus, Technique } from './constants';
+import type { Difficulty, Equipment, Goal, MuscleGroup, SessionStatus, Technique, Theme } from './constants';
+
+export interface ProfileDTO {
+  heightCm: number | null;
+  weightKg: number | null;
+  goal: Goal | null;
+  experienceLevel: Difficulty | null;
+  trainingDays: number[];
+  sessionMinutes: number | null;
+}
+
+export interface PreferencesDTO {
+  theme: Theme;
+  /** null = cor padrão da marca */
+  accentColor: string | null;
+  /** Som/vibração/notificação no fim do descanso. */
+  restAlerts: boolean;
+}
+
+export interface MeDTO {
+  id: string;
+  name: string;
+  email: string;
+  birthDate: string | null;
+  role: string;
+  termsAcceptedAt: string | null;
+  profile: ProfileDTO;
+  preferences: PreferencesDTO;
+}
 
 export interface ApiError {
   error: { code: string; message: string; issues?: { path: string; message: string }[]; requestId?: string };

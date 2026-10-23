@@ -74,6 +74,27 @@ export const TECHNIQUE_LABELS: Record<Technique, string> = {
   pyramid: 'Pirâmide',
 };
 
+export const GOALS = ['hypertrophy', 'weight_loss', 'conditioning', 'strength', 'health'] as const;
+export type Goal = (typeof GOALS)[number];
+
+export const GOAL_LABELS: Record<Goal, string> = {
+  hypertrophy: 'Hipertrofia',
+  weight_loss: 'Emagrecimento',
+  conditioning: 'Condicionamento',
+  strength: 'Força',
+  health: 'Saúde e bem-estar',
+};
+
+/** Nível de experiência do usuário (mesma escala da dificuldade dos exercícios). */
+export const EXPERIENCE_LABELS: Record<Difficulty, string> = {
+  beginner: 'Iniciante',
+  intermediate: 'Intermediário',
+  advanced: 'Avançado',
+};
+
+export const THEMES = ['dark', 'light'] as const;
+export type Theme = (typeof THEMES)[number];
+
 export const SESSION_STATUSES = ['active', 'paused', 'completed', 'abandoned'] as const;
 export type SessionStatus = (typeof SESSION_STATUSES)[number];
 
