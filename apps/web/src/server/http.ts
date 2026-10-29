@@ -47,7 +47,9 @@ export function errorResponse(err: unknown): Response {
 function assertSameOriginJson(req: Request) {
   if (req.method === 'GET' || req.method === 'HEAD') return;
   const type = req.headers.get('content-type') ?? '';
-  if (!type.startsWith('application/json')) {
+  // Sem corpo (ex.: DELETE) não há o que exigir; a checagem de Origin abaixo continua valendo.
+  const hasBody = type !== '' || (req.headers.get('content-length') ?? '0') !== '0' || req.headers.has('transfer-encoding');
+  if (hasBody && !type.startsWith('application/json')) {
     throw new HttpError(415, 'unsupported_media_type', 'Envie os dados como JSON.');
   }
   // Apps nativos não enviam Origin; navegadores sempre enviam em POST/PUT/PATCH/DELETE.
