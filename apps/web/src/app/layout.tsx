@@ -14,6 +14,8 @@ const display = Barlow_Condensed({
 export const metadata: Metadata = {
   title: { default: BRAND.name, template: `%s · ${BRAND.name}` },
   description: BRAND.tagline,
+  // iPhone: nome e modo tela cheia ao adicionar à tela inicial (ícone em app/apple-icon.png).
+  appleWebApp: { capable: true, title: BRAND.shortName, statusBarStyle: 'black' },
 };
 
 export const viewport: Viewport = {
