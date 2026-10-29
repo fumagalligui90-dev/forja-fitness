@@ -4,6 +4,7 @@ import { EQUIPMENT_LABELS, MUSCLE_GROUP_LABELS, type ExerciseDTO } from '@forja/
 import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { emptyFilter, ExerciseFilters, useExercises, type ExerciseFilter } from './exercise-filters';
+import { ExerciseThumb } from './exercise-visuals';
 import { Alert, Badge, Button, cn, Dialog, Spinner } from './ui';
 
 /**
@@ -89,16 +90,16 @@ export function ExercisePicker({
                     onClick={() => toggle(e)}
                     aria-pressed={multiple ? isSel : undefined}
                     className={cn(
-                      'flex w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition',
+                      'flex w-full items-center justify-between gap-3 rounded-xl border p-2 pr-3.5 text-left transition',
                       isSel ? 'border-accent bg-accent-soft' : 'border-line bg-surface-2 hover:border-faint',
                     )}
                   >
-                    <span className="min-w-0">
+                    <ExerciseThumb exercise={e} className="size-12" />
+                    <span className="min-w-0 flex-1">
                       <span className="block truncate font-semibold">{e.name}</span>
                       <span className="mt-0.5 flex flex-wrap gap-1.5 text-xs text-muted">
                         {MUSCLE_GROUP_LABELS[e.muscleGroup]} · {EQUIPMENT_LABELS[e.equipment]}
                         {e.isOwn && <Badge tone="accent">Meu</Badge>}
-                        {e.isDemo && <Badge>Demo</Badge>}
                       </span>
                     </span>
                     {multiple && (

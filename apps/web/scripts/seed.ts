@@ -10,5 +10,5 @@ const { seedDemoExercises } = await import('../src/db/seed');
 
 const handle = createDb();
 const n = await seedDemoExercises(handle.db);
-console.log(`[seed] ${n} exercícios de demonstração inseridos (${handle.kind})`);
+console.log(`[seed] ${n} exercícios novos inseridos; os existentes foram atualizados (${handle.kind})`);
 await handle.close();

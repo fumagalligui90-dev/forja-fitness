@@ -1,5 +1,6 @@
 /** Contratos (DTOs) da API /api/v1 — compartilhados entre servidor, web e app. */
 import type { Difficulty, Equipment, Goal, MuscleGroup, SessionStatus, Technique, Theme } from './constants';
+import type { Muscle } from './muscles';
 
 export interface ProfileDTO {
   heightCm: number | null;
@@ -42,6 +43,11 @@ export interface ExerciseDTO {
   difficulty: Difficulty;
   instructions: string;
   mediaUrl: string | null;
+  /** Músculos detalhados para o mapa muscular (vazio = usar o grupo). */
+  primaryMuscles: Muscle[];
+  secondaryMuscles: Muscle[];
+  /** Fotos de referência (posição inicial e final), caminhos relativos ao servidor. */
+  images: string[];
   /** true = criado pelo próprio usuário; false = biblioteca global */
   isOwn: boolean;
   isDemo: boolean;

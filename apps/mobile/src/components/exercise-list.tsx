@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { api, errorMessage } from '@/lib/api';
 import { useTheme } from '@/lib/theme';
+import { ExerciseThumb } from './exercise-visuals';
 import { Badge, Icon, Input, Row, Text } from './ui';
 
 export interface ExerciseFilter {
@@ -129,14 +130,16 @@ export function ExerciseRow({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
-        padding: 14,
+        gap: 12,
+        padding: 8,
+        paddingRight: 12,
         borderRadius: 14,
         borderWidth: 1,
         borderColor: selected ? colors.accent : colors.line,
         backgroundColor: selected ? colors.accentSoft : colors.surface,
       }}
     >
+      <ExerciseThumb exercise={e} />
       <View style={{ flex: 1, gap: 4 }}>
         <Text style={{ fontWeight: '700' }} numberOfLines={1}>
           {e.name}
@@ -146,7 +149,6 @@ export function ExerciseRow({
             {MUSCLE_GROUP_LABELS[e.muscleGroup]} · {EQUIPMENT_LABELS[e.equipment]}
           </Text>
           {e.isOwn && <Badge label="Meu" tone="accent" />}
-          {e.isDemo && <Badge label="Demo" />}
         </Row>
       </View>
       {selected !== undefined && <Icon name={selected ? 'checkmark-circle' : 'ellipse-outline'} color={selected ? colors.accent : colors.faint} size={24} />}

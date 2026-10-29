@@ -91,6 +91,7 @@ export function createApiClient(opts: ApiClientOptions) {
     exercises: {
       list: (q: { q?: string; muscleGroup?: string; equipment?: string; scope?: string } = {}, signal?: AbortSignal) =>
         request<ExerciseDTO[]>(`/exercises${qs(q)}`, { signal }),
+      get: (id: string) => request<ExerciseDTO>(`/exercises/${id}`),
       create: (input: ExerciseInput) => request<ExerciseDTO>('/exercises', { method: 'POST', body: input }),
       update: (id: string, input: ExerciseInput) => request<ExerciseDTO>(`/exercises/${id}`, { method: 'PATCH', body: input }),
       archive: (id: string) => request<{ ok: true }>(`/exercises/${id}`, { method: 'DELETE' }),

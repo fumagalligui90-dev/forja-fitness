@@ -29,6 +29,13 @@
       "when": 1792766764924,
       "tag": "0003_profiles_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793282562452,
+      "tag": "0004_exercise_media",
+      "breakpoints": true
     }
   ]
 }

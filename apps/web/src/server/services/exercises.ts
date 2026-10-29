@@ -6,6 +6,7 @@ import {
   exerciseInputSchema,
   exerciseQuerySchema,
   type ExerciseDTO,
+  type Muscle,
 } from '@forja/core';
 import { and, asc, eq, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
 import type { z } from 'zod';
@@ -32,6 +33,9 @@ function toDTO(row: Row, userId: string, isFavorite: boolean): ExerciseDTO {
     difficulty: row.difficulty,
     instructions: row.instructions,
     mediaUrl: row.mediaUrl,
+    primaryMuscles: row.primaryMuscles as Muscle[],
+    secondaryMuscles: row.secondaryMuscles as Muscle[],
+    images: row.images,
     isOwn: row.ownerId === userId,
     isDemo: row.isDemo,
     isFavorite,

@@ -147,6 +147,11 @@ export const exercises = pgTable(
     difficulty: difficultyEnum().notNull().default('beginner'),
     instructions: text().notNull().default(''),
     mediaUrl: text(),
+    /** Identificador estável dos exercícios da biblioteca (seed). */
+    slug: text().unique(),
+    primaryMuscles: text().array().notNull().default(sql`'{}'::text[]`),
+    secondaryMuscles: text().array().notNull().default(sql`'{}'::text[]`),
+    images: text().array().notNull().default(sql`'{}'::text[]`),
     isDemo: boolean().notNull().default(false),
     archivedAt: timestamp(tz),
     createdAt: createdAt(),

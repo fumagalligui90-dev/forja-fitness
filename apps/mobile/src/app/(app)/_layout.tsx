@@ -23,6 +23,7 @@ export default function AppLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="treino/[id]" options={{ title: 'Treino' }} />
+        <Stack.Screen name="exercicio/[id]" options={{ title: 'Exercício' }} />
         <Stack.Screen name="perfil" options={{ title: 'Perfil de treino' }} />
         <Stack.Screen name="resumo/[id]" options={{ title: 'Resumo' }} />
         {/* Modo treino: tela cheia, sem gesto de voltar acidental. */}
